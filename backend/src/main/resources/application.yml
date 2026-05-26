@@ -1,0 +1,37 @@
+spring:
+  application:
+    name: tonefinder
+  datasource:
+    url: jdbc:postgresql://localhost:5432/tonefinder
+    username: tf_user
+    password: tf_pass
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        jdbc:
+          time_zone: UTC
+    open-in-view: false
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+
+server:
+  port: 8080
+
+file:
+  upload:
+    path: ./uploads
+
+jwt:
+  secret: ${JWT_SECRET:dev-secret-key-for-tonefinder-please-change-in-production-min-32chars}
+  expiration: 86400000
+
+claude:
+  api:
+    key: ${CLAUDE_API_KEY:}
+    model: claude-sonnet-4-6
+    max-tokens: 4096
