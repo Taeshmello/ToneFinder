@@ -46,7 +46,7 @@ export default function AnalysisPage() {
       setUpload(up)
       startStream(up.id, feat)
     } catch (e) {
-      setError(e instanceof Error ? e.message : '알 수 없는 오류')
+      setError('처리 중 오류가 발생하였습니다.')
     } finally {
       setLoading(false)
     }
@@ -84,7 +84,7 @@ export default function AnalysisPage() {
 
       {(error || sseError) && (
         <div className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700">
-          오류: {error ?? sseError}
+          처리 중 오류가 발생하였습니다.
         </div>
       )}
 
