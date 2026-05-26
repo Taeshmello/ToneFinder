@@ -55,7 +55,10 @@ class AnalysisService(
             }
             .concatWith(
                 Mono.fromCallable {
-                    val json = accumulated.toString()
+                    val raw = accumulated.toString().trim()
+                    val json = if (raw.startsWith("```")) {
+                        raw.lines().drop(1).dropLast(1).joinToString("\n").trim()
+                    } else raw
                     result.toneCharacteristics = json
                     repository.save(result)
                     ServerSentEvent.builder<String>().event("complete").data(json).build()
@@ -103,8 +106,9 @@ class AnalysisService(
 ## 이펙터 DB 참고 정보
 $effectorContext
 
-## 응답 형식 (반드시 JSON만, 다른 텍스트 없이)
-```json
+## 응답 형식
+반드시 아래 구조의 순수 JSON만 출력하세요. 코드블록(```)이나 다른 텍스트는 절대 포함하지 마세요.
+
 {
   "toneCharacteristics": {
     "brightness": 0-10,
@@ -126,7 +130,6 @@ $effectorContext
   ],
   "signalChain": ["이펙터1", "이펙터2", "앰프"]
 }
-```
         """.trimIndent()
     }
 }
