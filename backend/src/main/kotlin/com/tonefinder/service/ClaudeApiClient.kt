@@ -24,7 +24,7 @@ class ClaudeApiClient(
         .build()
 
     fun stream(prompt: String): Flux<String> {
-        if (apiKey.isBlank()) return streamMock()
+        if (apiKey.isBlank()) return Flux.error(IllegalStateException("SERVICE_UNAVAILABLE"))
 
         val body = mapOf(
             "model" to model,
