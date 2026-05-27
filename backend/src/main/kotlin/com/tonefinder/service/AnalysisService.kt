@@ -7,7 +7,6 @@ import com.tonefinder.repository.EffectorRepository
 import org.slf4j.LoggerFactory
 import org.springframework.http.codec.ServerSentEvent
 import org.springframework.stereotype.Service
-import org.springframework.web.reactive.function.client.WebClientResponseException
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.core.scheduler.Schedulers
@@ -66,11 +65,7 @@ class AnalysisService(
             )
             .onErrorResume { e ->
                 log.error("Claude 스트리밍 오류", e)
-                val msg = when (e) {
-                    is WebClientResponseException -> "Claude API 오류 (${e.statusCode.value()}): ${e.responseBodyAsString.take(200)}"
-                    else -> "분석 중 오류가 발생했습니다: ${e.message}"
-                }
-                Flux.just(ServerSentEvent.builder<String>().event("error").data(msg).build())
+                Flux.just(ServerSentEvent.builder<String>().event("error").data("SERVICE_UNAVAILABLE").build())
             }
     }
 
@@ -92,8 +87,15 @@ class AnalysisService(
         return """
 당신은 20년 경력의 기타 톤 전문가입니다.
 
-아래 오디오 분석 데이터를 기반으로 이 기타 사운드의 톤 특성을 분석하고,
-해당 톤을 재현하기 위한 장비 세팅을 추천해주세요.
+## 분석 규칙
+1. toneCharacteristics(brightness, warmth, gain, type, description)와 ampSettings(bass, middle, treble 등 EQ 수치)는
+   반드시 아래 FFT 오디오 분석 데이터를 기반으로 도출하세요.
+
+2. recommendedGear(guitar, amplifier), effectorSettings, signalChain은
+   파일명에서 아티스트나 곡명을 인식할 수 있으면 해당 아티스트의 실제 사용 장비를 최우선으로 추천하세요.
+   예) "slash", "sweet child", "guns n roses" → Marshall Silver Jubilee, Gibson Les Paul 등 Slash 실사용 장비
+   예) "gilmour", "comfortably numb" → Hiwatt DR103, Fender Stratocaster 등 Gilmour 실사용 장비
+   파일명에서 아티스트/곡을 특정할 수 없는 경우에만 FFT 데이터로 장비를 추론하세요.
 
 ## 오디오 분석 데이터
 - 파일명: ${result.audioFilename ?: "알 수 없음"}

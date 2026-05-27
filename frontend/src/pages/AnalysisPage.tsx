@@ -84,7 +84,9 @@ export default function AnalysisPage() {
 
       {(error || sseError) && (
         <div className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700">
-          처리 중 오류가 발생하였습니다.
+          {sseError === 'SERVICE_UNAVAILABLE'
+            ? 'AI 분석 서비스를 현재 사용할 수 없습니다.'
+            : '처리 중 오류가 발생하였습니다.'}
         </div>
       )}
 
