@@ -55,31 +55,4 @@ class ClaudeApiClient(
             }
     }
 
-    private fun streamMock(): Flux<String> {
-        val mockJson = """
-{
-  "toneCharacteristics": {
-    "brightness": 7,
-    "warmth": 4,
-    "gain": 8,
-    "type": "overdrive",
-    "description": "중고역대가 강조된 따뜻한 오버드라이브 톤. 블루스와 클래식 록에 적합한 크런치 사운드입니다."
-  },
-  "recommendedGear": {
-    "guitar": "Gibson Les Paul Standard",
-    "amplifier": {"name": "JCM800", "brand": "Marshall"}
-  },
-  "ampSettings": {"bass": 6, "middle": 7, "treble": 6, "presence": 5, "gain": 8, "master": 6},
-  "effectorSettings": [
-    {"name": "Ibanez Tube Screamer TS-9", "knobs": [{"name": "Drive", "value": 7}, {"name": "Tone", "value": 6}, {"name": "Level", "value": 5}]},
-    {"name": "Boss DD-7", "knobs": [{"name": "E.Level", "value": 4}, {"name": "F.Back", "value": 3}, {"name": "D.Time", "value": 5}]}
-  ],
-  "signalChain": ["Ibanez Tube Screamer TS-9", "Boss DD-7", "Marshall JCM800"]
-}""".trimIndent()
-
-        val lines = mockJson.lines()
-        return Flux.interval(Duration.ofMillis(80))
-            .take(lines.size.toLong())
-            .map { i -> lines[i.toInt()] + "\n" }
-    }
 }
