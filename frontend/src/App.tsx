@@ -15,20 +15,15 @@ export default function App() {
         <Route
           path="*"
           element={
-            <>
-              <Header />
-              <Routes>
-                <Route path="/" element={<AnalysisPage />} />
-                <Route
-                  path="/my"
-                  element={
-                    <ProtectedRoute>
-                      <MyPage />
-                    </ProtectedRoute>
-                  }
-                />
-              </Routes>
-            </>
+            <ProtectedRoute>
+              <>
+                <Header />
+                <Routes>
+                  <Route path="/" element={<AnalysisPage />} />
+                  <Route path="/my" element={<MyPage />} />
+                </Routes>
+              </>
+            </ProtectedRoute>
           }
         />
       </Routes>
