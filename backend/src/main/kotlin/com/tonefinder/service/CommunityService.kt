@@ -23,16 +23,41 @@ class CommunityService(
 ) {
     private val formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
 
+    @Transactional(readOnly = true)
     fun getPosts(sort: String, toneType: String?): List<CommunityPostSummary> {
         val posts = if (toneType != null)
             postRepository.findAllByToneTypeOrderByCreatedAtDesc(toneType)
         else
             postRepository.findAllByOrderByCreatedAtDesc()
 
-        val summaries = posts.map { toSummary(it) }
+        if (posts.isEmpty()) return emptyList()
+
+        // bulk count로 N+1 방지
+        val likeCounts = likeRepository.countGroupByPostId()
+            .associate { row -> (row[0] as Long) to (row[1] as Long).toInt() }
+        val commentCounts = commentRepository.countGroupByPostId()
+            .associate { row -> (row[0] as Long) to (row[1] as Long).toInt() }
+
+        // 작성자 ID 목록으로 한 번에 조회
+        val authorIds = posts.map { it.userId }.toSet()
+        val authors = userRepository.findAllById(authorIds).associateBy { it.id }
+
+        val summaries = posts.map { post ->
+            val author = authors[post.userId]
+            CommunityPostSummary(
+                id = post.id,
+                title = post.title,
+                authorNickname = author?.nickname ?: author?.email ?: "알 수 없음",
+                toneType = post.toneType,
+                likeCount = likeCounts[post.id] ?: 0,
+                commentCount = commentCounts[post.id] ?: 0,
+                createdAt = post.createdAt.format(formatter),
+            )
+        }
         return if (sort == "popular") summaries.sortedByDescending { it.likeCount } else summaries
     }
 
+    @Transactional(readOnly = true)
     fun getPost(postId: Long, userId: Long?): CommunityPostDetail {
         val post = postRepository.findById(postId).orElseThrow { IllegalArgumentException("게시글을 찾을 수 없습니다.") }
         val author = userRepository.findById(post.userId).orElse(null)
@@ -100,6 +125,7 @@ class CommunityService(
         )
     }
 
+    @Transactional(readOnly = true)
     fun getComments(postId: Long, userId: Long?): List<CommunityPostCommentResponse> {
         return commentRepository.findByPostIdOrderByCreatedAtAsc(postId).map { comment ->
             val author = userRepository.findById(comment.userId).orElse(null)
@@ -148,7 +174,7 @@ class CommunityService(
                 analysisResultId = original.analysisResultId,
             )
         )
-        val toneJson = copied.analysisResultId?.let { id ->
+        val toneJson = original.analysisResultId?.let { id ->
             analysisRepository.findById(id).map { it.toneCharacteristics }.orElse(null)
         }
         return PresetResponse.from(copied, toneJson)
