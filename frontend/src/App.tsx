@@ -5,6 +5,8 @@ import AnalysisPage from './pages/AnalysisPage'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
 import MyPage from './pages/MyPage'
+import CommunityPage from './pages/CommunityPage'
+import CommunityPostPage from './pages/CommunityPostPage'
 
 export default function App() {
   return (
@@ -12,6 +14,14 @@ export default function App() {
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
+        <Route
+          path="/community"
+          element={<><Header /><CommunityPage /></>}
+        />
+        <Route
+          path="/community/:id"
+          element={<><Header /><CommunityPostPage /></>}
+        />
         <Route
           path="*"
           element={

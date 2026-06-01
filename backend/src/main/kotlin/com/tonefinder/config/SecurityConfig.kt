@@ -33,6 +33,7 @@ class SecurityConfig(
                     "/api/v1/auth/**",
                     "/api/v1/health",
                 ).permitAll()
+                it.requestMatchers(HttpMethod.GET, "/api/v1/community/**").permitAll()
                 it.requestMatchers(HttpMethod.POST, "/api/v1/audio/upload").permitAll()
                 it.anyRequest().authenticated()
             }
