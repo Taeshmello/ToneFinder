@@ -12,19 +12,16 @@ export default function Header() {
           ToneFinder
         </Link>
         <div className="flex items-center gap-3 text-sm">
+          <Link to="/community" className="text-slate-600 hover:text-teal-600 font-medium">
+            커뮤니티
+          </Link>
           {isLoggedIn ? (
             <>
               <span className="text-slate-500">{user?.nickname ?? user?.email}</span>
-              <Link
-                to="/my"
-                className="text-teal-600 hover:text-teal-700 font-medium"
-              >
+              <Link to="/my" className="text-teal-600 hover:text-teal-700 font-medium">
                 마이페이지
               </Link>
-              <button
-                onClick={logout}
-                className="text-slate-400 hover:text-slate-600"
-              >
+              <button onClick={logout} className="text-slate-400 hover:text-slate-600">
                 로그아웃
               </button>
             </>

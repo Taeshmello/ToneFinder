@@ -26,8 +26,8 @@ class CommunityController(private val communityService: CommunityService) {
     @GetMapping("/{id}")
     fun getPost(
         @PathVariable id: Long,
-        @AuthenticationPrincipal userId: Long?,
-    ) = ResponseEntity.ok(communityService.getPost(id, userId))
+        authentication: org.springframework.security.core.Authentication?,
+    ) = ResponseEntity.ok(communityService.getPost(id, authentication?.principal as? Long))
 
     @DeleteMapping("/{id}")
     fun deletePost(
@@ -47,8 +47,8 @@ class CommunityController(private val communityService: CommunityService) {
     @GetMapping("/{id}/comments")
     fun getComments(
         @PathVariable id: Long,
-        @AuthenticationPrincipal userId: Long?,
-    ) = ResponseEntity.ok(communityService.getComments(id, userId))
+        authentication: org.springframework.security.core.Authentication?,
+    ) = ResponseEntity.ok(communityService.getComments(id, authentication?.principal as? Long))
 
     @PostMapping("/{id}/comments")
     fun addComment(
