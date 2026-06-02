@@ -15,9 +15,10 @@ export default function Header() {
           <Link to="/community" className="text-slate-600 hover:text-teal-600 font-medium">
             커뮤니티
           </Link>
+          <span className="text-slate-200">|</span>
           {isLoggedIn ? (
             <>
-              <span className="text-slate-500">{user?.nickname ?? user?.email}</span>
+              <span className="text-slate-500">{user?.nickname ?? user?.email}<span className="font-bold"> 님</span></span>
               <Link to="/my" className="text-teal-600 hover:text-teal-700 font-medium">
                 마이페이지
               </Link>
